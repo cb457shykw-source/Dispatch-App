@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="_ds/modernist-423ad833-4f7a-42ed-966f-d341a3738aa4/styles.css">
+<script src="_ds/modernist-423ad833-4f7a-42ed-966f-d341a3738aa4/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:#f3f2f2;font-family:"Archivo",system-ui,sans-serif;color:#201e1d;-webkit-font-smoothing:antialiased}
+a{color:#ae1800}a:hover{color:#ec3013}
+@keyframes scrIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pulseRed{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+
+<div style="padding:36px 40px 60px;max-width:1180px">
+  <div style="display:flex;align-items:baseline;gap:14px;border-bottom:2px solid #201e1d;padding-bottom:12px">
+    <div style="font-weight:800;font-size:22px;letter-spacing:-0.02em">P&amp;A CIVIL, LLC</div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#ec3013">Crew Dispatch</div>
+    <div style="margin-left:auto;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#7d7979">Interactive prototype · v1</div>
+  </div>
+
+  <div style="display:flex;gap:44px;align-items:flex-start;padding-top:28px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:0;border:2px solid #201e1d;width:max-content">
+        <button style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:11px 16px;border:0;border-right:2px solid #201e1d;cursor:pointer;background:{{ dispBg }};color:{{ dispFg }}" onClick="{{ setDispatcher }}">Dispatcher</button>
+        <button style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:11px 16px;border:0;cursor:pointer;background:{{ crewBg }};color:{{ crewFg }}" onClick="{{ setCrew }}">Crew member</button>
+      </div>
+      <div style="font-size:11px;color:#7d7979;font-weight:500;max-width:340px">{{ modeNote }}</div>
+
+      <div style="width:414px;height:868px;background:#201e1d;border-radius:44px;padding:12px;box-shadow:0 12px 32px rgba(45,43,43,.22)">
+        <div style="position:relative;width:390px;height:844px;background:#f3f2f2;border-radius:32px;overflow:hidden;display:flex;flex-direction:column">
+
+          <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:13px;font-weight:600;background:#201e1d;color:#f3f2f2">
+            <span>9:41</span>
+            <span style="font-size:10px;letter-spacing:.12em">LTE ▮▮▮ 86%</span>
+          </div>
+
+          <div style="flex:none;background:#f3f2f2;border-bottom:2px solid #201e1d;padding:12px 16px 10px;display:flex;align-items:center;gap:10px">
+            <sc-if value="{{ canBack }}" hint-placeholder-val="{{ true }}">
+              <button style="border:0;background:none;padding:0 2px 0 0;cursor:pointer;display:flex;align-items:center" onClick="{{ back }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2.4"><path d="M15 18l-6-6 6-6"></path></svg>
+              </button>
+            </sc-if>
+            <div style="min-width:0">
+              <div style="font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#ec3013">{{ headerKicker }}</div>
+              <div style="font-size:17px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ headerTitle }}</div>
+            </div>
+            <div style="margin-left:auto;display:flex;border:2px solid #201e1d;flex:none">
+              <button style="font:600 10px/1 Archivo,sans-serif;letter-spacing:.08em;padding:7px 8px;border:0;border-right:2px solid #201e1d;cursor:pointer;background:{{ enBg }};color:{{ enFg }}" onClick="{{ setEn }}">EN</button>
+              <button style="font:600 10px/1 Archivo,sans-serif;letter-spacing:.08em;padding:7px 8px;border:0;cursor:pointer;background:{{ esBg }};color:{{ esFg }}" onClick="{{ setEs }}">ES</button>
+            </div>
+          </div>
+
+          <div key="{{ screenKey }}" style="flex:1;overflow-y:auto;overflow-x:hidden;animation:scrIn .22s cubic-bezier(.2,.7,.3,1)">
+
+            <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px 16px 24px">
+                <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+                  <div style="font-size:26px;font-weight:800;letter-spacing:-0.03em">{{ t_tomorrow }}</div>
+                </div>
+                <div style="font-size:12px;color:#605d5d;font-weight:500;margin-bottom:14px">{{ boardSummary }}</div>
+                <div style="height:2px;background:#201e1d;margin-bottom:0;transform-origin:left;animation:barGrow .4s ease-out"></div>
+                <sc-for list="{{ jobs }}" as="job" hint-placeholder-count="3">
+                  <div style="border-bottom:2px solid rgba(32,30,29,.4);padding:14px 0;cursor:pointer" style-hover="background:#fff2ef" onClick="{{ job.open }}">
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;line-height:1.2">{{ job.site }}</div>
+                        <div style="font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#7d7979;margin-top:3px">{{ job.workLabel }} · {{ job.qty }}</div>
+                      </div>
+                      <sc-if value="{{ job.isPour }}" hint-placeholder-val="{{ true }}">
+                        <div style="flex:none;text-align:left;background:#ec3013;color:#fff;padding:5px 8px">
+                          <div style="font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.85">{{ t_pourShort }}</div>
+                          <div style="font-size:15px;font-weight:800;letter-spacing:-0.01em">{{ job.pour }}</div>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ job.notPour }}" hint-placeholder-val="{{ true }}">
+                        <div style="flex:none;border:2px solid #201e1d;padding:5px 8px">
+                          <div style="font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#7d7979">{{ t_reportShort }}</div>
+                          <div style="font-size:15px;font-weight:800;letter-spacing:-0.01em">{{ job.report }}</div>
+                        </div>
+                      </sc-if>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+                      <sc-if value="{{ job.assigned }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 11a3 3 0 100-6M21 20c0-2.5-1.5-4.6-3.6-5.5"></path></svg>
+                          {{ job.crewLabelFull }}
+                        </div>
+                        <sc-if value="{{ job.ackFull }}" hint-placeholder-val="{{ true }}">
+                          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#605d5d">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605d5d" stroke-width="2.6"><path d="M20 6L9 17l-5-5"></path></svg>
+                            {{ job.ackText }}
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ job.ackPartial }}" hint-placeholder-val="{{ true }}">
+                          <div style="margin-left:auto;font-size:11px;font-weight:700;color:#ae1800;background:#ffe0d9;padding:3px 7px">{{ job.ackText }}</div>
+                        </sc-if>
+                        <sc-if value="{{ job.ackNone }}" hint-placeholder-val="{{ true }}">
+                          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#fff;background:#ec3013;padding:3px 7px;animation:pulseRed 2s infinite">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"></path></svg>
+                            {{ job.ackText }}
+                          </div>
+                        </sc-if>
+                      </sc-if>
+                      <sc-if value="{{ job.unassigned }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;align-items:center;gap:8px;width:100%">
+                          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ec3013">{{ t_unassigned }}</div>
+                          <button style="margin-left:auto;font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:#ec3013;color:#fff;border:0;padding:8px 12px;cursor:pointer;text-align:left" style-hover="background:#dd2b0f" onClick="{{ job.assign }}">{{ t_assignCrew }}</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:18px;font-size:11px;color:#7d7979;font-weight:500;line-height:1.5">{{ boardHint }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isJob }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <div style="display:flex;border-bottom:2px solid #201e1d">
+                  <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:13px 10px;border:0;cursor:pointer;text-align:left;background:{{ tabOvBg }};color:{{ tabOvFg }}" onClick="{{ subOverview }}">{{ t_overview }}</button>
+                  <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:13px 10px;border:0;border-left:2px solid #201e1d;cursor:pointer;text-align:left;background:{{ tabFiBg }};color:{{ tabFiFg }}" onClick="{{ subFiles }}">{{ t_filesShort }}</button>
+                  <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:13px 10px;border:0;border-left:2px solid #201e1d;cursor:pointer;text-align:left;background:{{ tabCrBg }};color:{{ tabCrFg }}" onClick="{{ subCrew }}">{{ t_crew }}</button>
+                </div>
+
+                <sc-if value="{{ subIsOverview }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:16px">
+                    <div style="font-size:22px;font-weight:800;letter-spacing:-0.025em;line-height:1.1">{{ job_site }}</div>
+                    <div style="font-size:12px;font-weight:500;color:#605d5d;margin-top:4px">{{ job_addr }}</div>
+                    <div style="display:flex;gap:8px;margin-top:12px">
+                      <button style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="background:#ffe0d9" onClick="{{ toastDirections }}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+                        {{ t_directions }}
+                      </button>
+                      <button style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="background:#ffe0d9" onClick="{{ toastCall }}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z"></path></svg>
+                        {{ t_call }}
+                      </button>
+                    </div>
+
+                    <div style="height:2px;background:#201e1d;margin:16px 0 0"></div>
+
+                    <sc-if value="{{ job_isPour }}" hint-placeholder-val="{{ true }}">
+                      <div style="background:#ec3013;color:#fff;padding:14px 14px 16px;margin-top:0">
+                        <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.9">{{ t_pourTime }}</div>
+                        <div style="font-size:44px;font-weight:800;letter-spacing:-0.04em;line-height:1">{{ job_pour }}</div>
+                        <div style="font-size:12px;font-weight:600;margin-top:4px;opacity:.95">{{ t_reportTime }} {{ job_report }} · {{ job_qty }}</div>
+                      </div>
+                      <div style="border:2px solid #201e1d;border-top:0;padding:12px 14px">
+                        <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ec3013;margin-bottom:8px">{{ t_supplier }}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 12px">
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_supplierName }}</div><div style="font-size:14px;font-weight:700">{{ job_supplier }}</div></div>
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_plant }}</div><div style="font-size:14px;font-weight:700">{{ job_plant }}</div></div>
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_dispatchPhone }}</div><div style="font-size:14px;font-weight:700">{{ job_phone }}</div></div>
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_interval }}</div><div style="font-size:14px;font-weight:700">{{ job_interval }}</div></div>
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_mix }}</div><div style="font-size:14px;font-weight:700">{{ job_mix }}</div></div>
+                          <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_order }}</div><div style="font-size:14px;font-weight:700">{{ job_order }}</div></div>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ job_notPour }}" hint-placeholder-val="{{ true }}">
+                      <div style="border:2px solid #201e1d;border-top:0;padding:14px">
+                        <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7d7979">{{ t_reportTime }}</div>
+                        <div style="font-size:34px;font-weight:800;letter-spacing:-0.03em;line-height:1.05">{{ job_report }}</div>
+                        <div style="font-size:12px;font-weight:600;color:#605d5d;margin-top:2px">{{ job_workLabel }} · {{ job_qty }} · {{ t_noPour }}</div>
+                      </div>
+                    </sc-if>
+
+                    <div style="margin-top:16px;display:flex;gap:14px">
+                      <div style="flex:1"><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_weather }}</div><div style="font-size:14px;font-weight:700">{{ job_weather }}</div></div>
+                      <div style="flex:1"><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_slump }}</div><div style="font-size:14px;font-weight:700">{{ job_slump }}</div></div>
+                    </div>
+                    <div style="margin-top:14px;padding-top:12px;border-top:2px solid rgba(32,30,29,.4)">
+                      <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979;margin-bottom:4px">{{ t_notes }}</div>
+                      <div style="font-size:13px;font-weight:500;line-height:1.45;text-wrap:pretty">{{ job_notes }}</div>
+                    </div>
+                    <sc-if value="{{ canDispatch }}" hint-placeholder-val="{{ true }}">
+                      <button style="width:100%;margin-top:18px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:#201e1d;color:#f3f2f2;border:0;padding:15px 14px;cursor:pointer;text-align:left" style-hover="background:#444141" onClick="{{ goAcks }}">{{ t_seeAcks }}</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ subIsFiles }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:16px">
+                    <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ec3013;margin-bottom:10px">{{ t_files }}</div>
+                    <div style="border:2px solid #201e1d;background:#eae9e9;height:150px;display:flex;align-items:flex-end;padding:10px;background-image:linear-gradient(rgba(32,30,29,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(32,30,29,.13) 1px,transparent 1px);background-size:26px 26px">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#201e1d;color:#f3f2f2;padding:5px 8px">{{ t_siteMap }} — {{ t_placeholder }}</div>
+                    </div>
+                    <sc-for list="{{ fileList }}" as="f" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid rgba(32,30,29,.4);padding:13px 0;cursor:pointer" style-hover="background:#fff2ef" onClick="{{ f.open }}">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ec3013" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><path d="M14 2v6h6"></path></svg>
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:14px;font-weight:700">{{ f.name }}</div>
+                          <div style="font-size:11px;font-weight:500;color:#7d7979">{{ f.meta }}</div>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2.2"><path d="M9 18l6-6-6-6"></path></svg>
+                      </div>
+                    </sc-for>
+                    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                      <div style="border:2px solid #201e1d;background:#eae9e9;aspect-ratio:4/3;display:flex;align-items:flex-end;padding:7px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7d7979">{{ t_sitePhoto }} 01</div>
+                      <div style="border:2px solid #201e1d;background:#eae9e9;aspect-ratio:4/3;display:flex;align-items:flex-end;padding:7px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7d7979">{{ t_sitePhoto }} 02</div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ subIsCrew }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:16px">
+                    <div style="display:flex;align-items:baseline;gap:8px">
+                      <div style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ job_crewLabelFull }}</div>
+                      <div style="margin-left:auto;font-size:11px;font-weight:700;color:#605d5d">{{ job_ackText }}</div>
+                    </div>
+                    <div style="height:2px;background:#201e1d;margin:10px 0 0"></div>
+                    <sc-for list="{{ crewMembers }}" as="m" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid rgba(32,30,29,.4);padding:12px 0">
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:14px;font-weight:700">{{ m.name }}</div>
+                          <div style="font-size:11px;font-weight:500;color:#7d7979">{{ m.trade }}</div>
+                        </div>
+                        <sc-if value="{{ m.ok }}" hint-placeholder-val="{{ true }}">
+                          <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#605d5d">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605d5d" stroke-width="2.8"><path d="M20 6L9 17l-5-5"></path></svg>
+                            {{ m.at }}
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ m.pending }}" hint-placeholder-val="{{ true }}">
+                          <div style="display:flex;align-items:center;gap:8px">
+                            <div style="font-size:11px;font-weight:700;color:#ae1800">{{ t_pending }}</div>
+                            <sc-if value="{{ canDispatch }}" hint-placeholder-val="{{ true }}">
+                              <button style="font:700 10px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:#ec3013;color:#fff;border:0;padding:8px 9px;cursor:pointer" style-hover="background:#dd2b0f" onClick="{{ m.nudge }}">{{ t_nudge }}</button>
+                            </sc-if>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ canDispatch }}" hint-placeholder-val="{{ true }}">
+                      <button style="width:100%;margin-top:16px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:none;color:#201e1d;border:2px solid #201e1d;padding:14px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ openSheet }}">{{ t_swap }}</button>
+                    </sc-if>
+                    <sc-if value="{{ cannotDispatch }}" hint-placeholder-val="{{ true }}">
+                      <div style="margin-top:16px;border:2px solid rgba(32,30,29,.4);padding:12px;font-size:12px;font-weight:500;color:#605d5d;line-height:1.45">{{ t_gated }}</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isAcks }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <div style="font-size:12px;font-weight:600;color:#605d5d">{{ t_tomorrow }}</div>
+                <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-top:2px">{{ ackHeadline }}</div>
+                <div style="height:2px;background:#201e1d;margin:12px 0 0;transform-origin:left;animation:barGrow .4s ease-out"></div>
+                <sc-for list="{{ ackJobs }}" as="j" hint-placeholder-count="3">
+                  <div style="border-bottom:2px solid rgba(32,30,29,.4);padding:14px 0;cursor:pointer" style-hover="background:#fff2ef" onClick="{{ j.open }}">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:15px;font-weight:700;line-height:1.2">{{ j.site }}</div>
+                        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7d7979;margin-top:2px">{{ j.crewLabelFull }}</div>
+                      </div>
+                      <div style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ j.ackText }}</div>
+                    </div>
+                    <div style="height:6px;background:#d7d3d3;margin-top:9px">
+                      <div style="height:6px;background:#ec3013;width:{{ j.pct }}"></div>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:16px;font-size:11px;color:#7d7979;font-weight:500;line-height:1.5">{{ t_ackHint }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isRoster }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em">{{ t_roster }}</div>
+                <div style="font-size:12px;font-weight:500;color:#605d5d;margin-top:2px">{{ rosterSummary }}</div>
+                <div style="height:2px;background:#201e1d;margin:12px 0 0"></div>
+                <sc-for list="{{ roster }}" as="p" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid rgba(32,30,29,.4);padding:12px 0;cursor:pointer" style-hover="background:#fff2ef" onClick="{{ p.open }}">
+                    <div style="width:34px;height:34px;flex:none;background:#201e1d;color:#f3f2f2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ p.initials }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:14px;font-weight:700">{{ p.name }}</div>
+                      <div style="font-size:11px;font-weight:500;color:#7d7979">{{ p.roleLabel }} · {{ p.trade }}</div>
+                    </div>
+                    <sc-if value="{{ p.isAvailable }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:2px solid #201e1d;padding:4px 7px">{{ t_available }}</div>
+                    </sc-if>
+                    <sc-if value="{{ p.isOnJob }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#ffe0d9;color:#ae1800;padding:5px 7px">{{ p.jobShort }}</div>
+                    </sc-if>
+                    <sc-if value="{{ p.isOff }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9b9797">{{ t_off }}</div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <div style="width:56px;height:56px;flex:none;background:#201e1d;color:#f3f2f2;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800">{{ person_initials }}</div>
+                  <div>
+                    <div style="font-size:22px;font-weight:800;letter-spacing:-0.025em;line-height:1.1">{{ person_name }}</div>
+                    <div style="font-size:12px;font-weight:600;color:#605d5d">{{ person_trade }} · {{ person_phone }}</div>
+                  </div>
+                </div>
+                <div style="height:2px;background:#201e1d;margin:14px 0 0"></div>
+                <div style="padding:13px 0;border-bottom:2px solid rgba(32,30,29,.4)">
+                  <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7d7979;margin-bottom:7px">{{ t_role }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:0;border:2px solid #201e1d;width:max-content">
+                    <sc-for list="{{ roleOptions }}" as="r" hint-placeholder-count="4">
+                      <button style="font:700 10px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:10px 11px;border:0;border-right:2px solid #201e1d;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}" onClick="{{ r.pick }}">{{ r.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11px;font-weight:500;color:#605d5d;margin-top:8px;line-height:1.45">{{ roleNote }}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:2px solid rgba(32,30,29,.4)">
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:700">{{ t_canDispatch }}</div>
+                    <div style="font-size:11px;font-weight:500;color:#7d7979">{{ t_canDispatchNote }}</div>
+                  </div>
+                  <div style="width:52px;height:28px;flex:none;border:2px solid #201e1d;background:{{ dispatchToggleBg }};display:flex;align-items:center;padding:2px;cursor:pointer;justify-content:{{ dispatchToggleJustify }}" onClick="{{ toggleDispatch }}">
+                    <div style="width:20px;height:20px;background:{{ dispatchKnobBg }};transition:all .18s"></div>
+                  </div>
+                </div>
+                <div style="padding:14px 0;border-bottom:2px solid rgba(32,30,29,.4)">
+                  <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7d7979;margin-bottom:7px">{{ t_language }}</div>
+                  <div style="display:flex;border:2px solid #201e1d;width:max-content">
+                    <button style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;padding:11px 14px;border:0;border-right:2px solid #201e1d;cursor:pointer;background:{{ enBg }};color:{{ enFg }}" onClick="{{ setEn }}">English</button>
+                    <button style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;padding:11px 14px;border:0;cursor:pointer;background:{{ esBg }};color:{{ esFg }}" onClick="{{ setEs }}">Español</button>
+                  </div>
+                  <div style="font-size:11px;font-weight:500;color:#605d5d;margin-top:8px">{{ t_langNote }}</div>
+                </div>
+                <div style="padding:14px 0">
+                  <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7d7979;margin-bottom:6px">{{ t_thisWeek }}</div>
+                  <sc-for list="{{ personWeek }}" as="d" hint-placeholder-count="5">
+                    <div style="display:flex;gap:10px;padding:9px 0;border-bottom:2px solid rgba(32,30,29,.15)">
+                      <div style="width:52px;flex:none;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7d7979">{{ d.day }}</div>
+                      <div style="flex:1;font-size:13px;font-weight:600">{{ d.job }}</div>
+                      <div style="font-size:12px;font-weight:700;color:#ae1800">{{ d.time }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isCrewToday }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <sc-if value="{{ needsAccept }}" hint-placeholder-val="{{ true }}">
+                  <div style="background:#201e1d;color:#f3f2f2;padding:14px 16px 16px;animation:fadeIn .3s">
+                    <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ff9783">{{ t_newAssignment }}</div>
+                    <div style="font-size:15px;font-weight:700;line-height:1.3;margin-top:4px;text-wrap:pretty">{{ acceptPrompt }}</div>
+                    <button style="width:100%;margin-top:12px;font:800 13px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:#ec3013;color:#fff;border:0;padding:17px 14px;cursor:pointer;text-align:left" style-hover="background:#ff563c" onClick="{{ accept }}">{{ t_accept }}</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasAccepted }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:8px;background:#eae9e9;border-bottom:2px solid #201e1d;padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#605d5d;animation:fadeIn .3s">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#605d5d" stroke-width="2.8"><path d="M20 6L9 17l-5-5"></path></svg>
+                    {{ acceptedAt }}
+                  </div>
+                </sc-if>
+
+                <div style="padding:16px">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7d7979">{{ t_today }} · {{ myCrewLabel }}</div>
+                  <div style="font-size:22px;font-weight:800;letter-spacing:-0.025em;line-height:1.1;margin-top:3px">{{ myJobSite }}</div>
+                  <div style="font-size:12px;font-weight:500;color:#605d5d;margin-top:3px">{{ myJobAddr }}</div>
+
+                  <sc-if value="{{ myIsPour }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:#ec3013;color:#fff;padding:16px;margin-top:14px">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.9">{{ t_pourTime }}</div>
+                      <div style="font-size:62px;font-weight:800;letter-spacing:-0.05em;line-height:.95">{{ myPour }}</div>
+                      <div style="font-size:13px;font-weight:700;margin-top:6px">{{ t_reportTime }} {{ myReport }} · {{ myQty }}</div>
+                    </div>
+                    <div style="border:2px solid #201e1d;border-top:0;padding:12px 14px">
+                      <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ec3013;margin-bottom:8px">{{ t_supplier }}</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 12px">
+                        <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_supplierName }}</div><div style="font-size:14px;font-weight:700">{{ mySupplier }}</div></div>
+                        <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_plant }}</div><div style="font-size:14px;font-weight:700">{{ myPlant }}</div></div>
+                        <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_interval }}</div><div style="font-size:14px;font-weight:700">{{ myInterval }}</div></div>
+                        <div><div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7d7979">{{ t_mix }}</div><div style="font-size:14px;font-weight:700">{{ myMix }}</div></div>
+                      </div>
+                      <button style="width:100%;margin-top:12px;font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:12px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ toastSupplier }}">{{ t_callSupplier }}</button>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ myNotPour }}" hint-placeholder-val="{{ true }}">
+                    <div style="border:2px solid #201e1d;padding:14px;margin-top:14px">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ec3013">{{ t_tasks }}</div>
+                      <sc-for list="{{ myTasks }}" as="task" hint-placeholder-count="3">
+                        <div style="display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:2px solid rgba(32,30,29,.2)">
+                          <div style="width:16px;height:16px;flex:none;border:2px solid #201e1d;margin-top:2px"></div>
+                          <div style="font-size:16px;font-weight:700;line-height:1.25;text-wrap:pretty">{{ task.text }}</div>
+                        </div>
+                      </sc-for>
+                      <div style="font-size:12px;font-weight:600;color:#605d5d;margin-top:10px">{{ t_reportTime }} {{ myReport }} · {{ myQty }}</div>
+                    </div>
+                  </sc-if>
+
+                  <div style="display:flex;gap:8px;margin-top:14px">
+                    <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:13px 10px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ toastDirections }}">{{ t_directions }}</button>
+                    <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:13px 10px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ toastCall }}">{{ t_call }}</button>
+                  </div>
+
+                  <div style="height:2px;background:#201e1d;margin:18px 0 0"></div>
+                  <div style="padding-top:14px">
+                    <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7d7979;margin-bottom:10px">{{ t_stages }}</div>
+                    <sc-for list="{{ stageList }}" as="s" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:2px solid rgba(32,30,29,.2)">
+                        <sc-if value="{{ s.done }}" hint-placeholder-val="{{ true }}">
+                          <div style="width:24px;height:24px;flex:none;background:#201e1d;display:flex;align-items:center;justify-content:center">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f3f2f2" stroke-width="3"><path d="M20 6L9 17l-5-5"></path></svg>
+                          </div>
+                          <div style="flex:1;font-size:15px;font-weight:600;color:#7d7979;text-decoration:line-through">{{ s.name }}</div>
+                          <div style="font-size:11px;font-weight:600;color:#9b9797">{{ s.at }}</div>
+                        </sc-if>
+                        <sc-if value="{{ s.current }}" hint-placeholder-val="{{ true }}">
+                          <div style="width:24px;height:24px;flex:none;border:2px solid #ec3013;background:#ffe0d9"></div>
+                          <div style="flex:1;font-size:17px;font-weight:800;letter-spacing:-0.01em">{{ s.name }}</div>
+                          <button style="font:700 10px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:#ec3013;color:#fff;border:0;padding:10px 11px;cursor:pointer" style-hover="background:#dd2b0f" onClick="{{ s.complete }}">{{ t_done }}</button>
+                        </sc-if>
+                        <sc-if value="{{ s.todo }}" hint-placeholder-val="{{ true }}">
+                          <div style="width:24px;height:24px;flex:none;border:2px solid rgba(32,30,29,.35)"></div>
+                          <div style="flex:1;font-size:15px;font-weight:600;color:#9b9797">{{ s.name }}</div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="display:flex;gap:8px;margin-top:18px">
+                    <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;background:#201e1d;color:#f3f2f2;border:0;padding:15px 12px;cursor:pointer;text-align:left" style-hover="background:#444141" onClick="{{ goPhotos }}">{{ t_addPhoto }}</button>
+                    <button style="flex:1;font:700 11px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;background:#ec3013;color:#fff;border:0;padding:15px 12px;cursor:pointer;text-align:left" style-hover="background:#dd2b0f" onClick="{{ goDelay }}">{{ t_reportDelay }}</button>
+                  </div>
+                  <button style="width:100%;margin-top:8px;font:700 11px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:14px 12px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ goJobFromCrew }}">{{ t_files }}</button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDelay }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <sc-if value="{{ delayPicking }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em;line-height:1.1">{{ t_whatHappened }}</div>
+                    <div style="font-size:12px;font-weight:500;color:#605d5d;margin-top:4px">{{ delaySub }}</div>
+                    <div style="height:2px;background:#201e1d;margin:14px 0 0"></div>
+                    <sc-for list="{{ delayReasons }}" as="r" hint-placeholder-count="4">
+                      <button style="width:100%;display:flex;align-items:center;gap:10px;border:0;border-bottom:2px solid rgba(32,30,29,.4);background:{{ r.bg }};padding:16px 8px;cursor:pointer;text-align:left" style-hover="background:#fff2ef" onClick="{{ r.pick }}">
+                        <div style="width:18px;height:18px;flex:none;border:2px solid #201e1d;background:{{ r.dot }}"></div>
+                        <div style="font-size:16px;font-weight:700">{{ r.label }}</div>
+                      </button>
+                    </sc-for>
+                    <div style="margin-top:16px">
+                      <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7d7979;margin-bottom:6px">{{ t_howLong }}</div>
+                      <div style="display:flex;border:2px solid #201e1d;width:max-content">
+                        <sc-for list="{{ delayLengths }}" as="d" hint-placeholder-count="3">
+                          <button style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.06em;padding:12px 13px;border:0;border-right:2px solid #201e1d;cursor:pointer;background:{{ d.bg }};color:{{ d.fg }}" onClick="{{ d.pick }}">{{ d.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <button style="width:100%;margin-top:20px;font:800 13px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:{{ delaySendBg }};color:{{ delaySendFg }};border:0;padding:18px 14px;cursor:pointer;text-align:left" onClick="{{ submitDelay }}">{{ t_sendToDispatch }}</button>
+                    <div style="font-size:11px;font-weight:500;color:#7d7979;margin-top:8px;line-height:1.45">{{ t_delayNote }}</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ delaySent }}" hint-placeholder-val="{{ true }}">
+                  <div style="animation:fadeIn .3s">
+                    <div style="background:#201e1d;color:#f3f2f2;padding:18px">
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff9783" stroke-width="2.6"><path d="M20 6L9 17l-5-5"></path></svg>
+                      <div style="font-size:22px;font-weight:800;letter-spacing:-0.025em;margin-top:8px;line-height:1.15">{{ t_delaySentTitle }}</div>
+                      <div style="font-size:13px;font-weight:500;margin-top:6px;line-height:1.45;opacity:.85">{{ delaySentBody }}</div>
+                    </div>
+                    <div style="border:2px solid #201e1d;border-top:0;padding:14px">
+                      <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7d7979">{{ t_notified }}</div>
+                      <div style="font-size:15px;font-weight:700;margin-top:4px">{{ t_notifiedWho }}</div>
+                    </div>
+                    <button style="width:100%;margin-top:16px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:15px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ goToday }}">{{ t_backToToday }}</button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isPhotos }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em">{{ t_photos }}</div>
+                <div style="font-size:12px;font-weight:500;color:#605d5d;margin-top:3px">{{ photoSub }}</div>
+                <button style="width:100%;margin-top:14px;font:800 13px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:#201e1d;color:#f3f2f2;border:0;padding:17px 14px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px" style-hover="background:#444141" onClick="{{ addPhoto }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f3f2f2" stroke-width="2.2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  {{ t_addPhoto }}
+                </button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+                  <sc-for list="{{ photoList }}" as="ph" hint-placeholder-count="4">
+                    <div style="border:2px solid #201e1d;background:#eae9e9;aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:flex-end;padding:8px;animation:fadeIn .25s">
+                      <div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7d7979">{{ ph.caption }}</div>
+                      <div style="font-size:10px;font-weight:600;color:#9b9797">{{ ph.at }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isSched }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px">
+                <div style="font-size:24px;font-weight:800;letter-spacing:-0.03em">{{ t_myWeek }}</div>
+                <div style="height:2px;background:#201e1d;margin:12px 0 0"></div>
+                <sc-for list="{{ myWeek }}" as="d" hint-placeholder-count="5">
+                  <div style="border-bottom:2px solid rgba(32,30,29,.4);padding:14px 0">
+                    <div style="display:flex;align-items:baseline;gap:10px">
+                      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7d7979;width:62px;flex:none">{{ d.day }}</div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:16px;font-weight:700;line-height:1.2">{{ d.job }}</div>
+                        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7d7979;margin-top:2px">{{ d.what }}</div>
+                      </div>
+                      <sc-if value="{{ d.isPour }}" hint-placeholder-val="{{ true }}">
+                        <div style="background:#ec3013;color:#fff;padding:5px 8px;font-size:14px;font-weight:800;letter-spacing:-0.01em">{{ d.time }}</div>
+                      </sc-if>
+                      <sc-if value="{{ d.notPour }}" hint-placeholder-val="{{ true }}">
+                        <div style="font-size:14px;font-weight:700;color:#605d5d">{{ d.time }}</div>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:14px;font-size:11px;font-weight:500;color:#7d7979;line-height:1.5">{{ t_weekHint }}</div>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <div style="flex:none;display:flex;border-top:2px solid #201e1d;background:#f3f2f2">
+            <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="4">
+              <button style="flex:1;border:0;background:{{ tab.bg }};color:{{ tab.fg }};padding:11px 4px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px" onClick="{{ tab.go }}">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="{{ tab.icon }}"></path></svg>
+                <span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">{{ tab.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;inset:0;background:rgba(32,30,29,.55);animation:fadeIn .2s;display:flex;flex-direction:column;justify-content:flex-end" onClick="{{ closeSheet }}">
+              <div style="background:#f3f2f2;border-top:2px solid #201e1d;padding:16px;animation:sheetUp .26s cubic-bezier(.2,.8,.25,1)" onClick="{{ stop }}">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ec3013">{{ sheetKicker }}</div>
+                <div style="font-size:20px;font-weight:800;letter-spacing:-0.025em;margin-top:2px">{{ t_selectCrew }}</div>
+                <div style="height:2px;background:#201e1d;margin:12px 0 0"></div>
+                <sc-for list="{{ crewOptions }}" as="c" hint-placeholder-count="3">
+                  <button style="width:100%;display:flex;align-items:center;gap:11px;border:0;border-bottom:2px solid rgba(32,30,29,.4);background:none;padding:14px 4px;cursor:pointer;text-align:left" style-hover="background:#fff2ef" onClick="{{ c.pick }}">
+                    <div style="width:32px;height:32px;flex:none;background:#201e1d;color:#f3f2f2;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800">{{ c.initials }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:15px;font-weight:700">{{ c.name }}</div>
+                      <div style="font-size:11px;font-weight:500;color:#7d7979">{{ c.meta }}</div>
+                    </div>
+                    <sc-if value="{{ c.free }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:2px solid #201e1d;padding:4px 7px">{{ t_available }}</div>
+                    </sc-if>
+                    <sc-if value="{{ c.busy }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ae1800;background:#ffe0d9;padding:5px 7px">{{ c.busyLabel }}</div>
+                    </sc-if>
+                  </button>
+                </sc-for>
+                <button style="width:100%;margin-top:14px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:none;border:2px solid #201e1d;padding:14px;cursor:pointer;text-align:left" style-hover="background:#ffe0d9" onClick="{{ closeSheet }}">{{ t_cancel }}</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ toast }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;left:16px;right:16px;bottom:82px;background:#201e1d;color:#f3f2f2;padding:13px 14px;font-size:13px;font-weight:700;animation:toastIn .22s;display:flex;align-items:center;gap:9px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff9783" stroke-width="2.6"><path d="M20 6L9 17l-5-5"></path></svg>
+              {{ toast }}
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+    <aside style="width:400px;min-width:320px;flex:1">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#ec3013">Design notes</div>
+      <div style="height:2px;background:#201e1d;margin:10px 0 16px"></div>
+      <div style="font-size:13px;font-weight:500;line-height:1.55;text-wrap:pretty;color:#444141">
+        <p style="margin:0 0 14px"><strong style="font-weight:800;color:#201e1d">One app, two modes.</strong> The switch above the phone is a prototype control, not a product feature — in the real app your role decides which shell you get. Dispatcher lands on tomorrow's board; crew lands on today's work.</p>
+        <p style="margin:0 0 14px"><strong style="font-weight:800;color:#201e1d">Pour time earns the red.</strong> Placement time is the only number set in accent red, and only on pour days. Form, strip and backfill days lead with the task list instead — so red always means "concrete is coming."</p>
+        <p style="margin:0 0 14px"><strong style="font-weight:800;color:#201e1d">Acknowledgement is a first-class object.</strong> Every job row carries a count (7/9). Zero acks pulses red. Tap through to per-person check marks with timestamps and a silent resend for anyone still pending.</p>
+        <p style="margin:0 0 14px"><strong style="font-weight:800;color:#201e1d">Roles gate dispatching.</strong> Owner → Dispatcher → Foreman → Crew, with a per-person override on the profile. In crew mode the assign controls are replaced by a plain explanation rather than disabled buttons.</p>
+        <p style="margin:0 0 14px"><strong style="font-weight:800;color:#201e1d">EN / ES everywhere.</strong> The header toggle switches every string live and the profile stores it per person. Job names, addresses and mix numbers stay as written — those are proper nouns.</p>
+        <p style="margin:0 0 0;color:#7d7979"><strong style="font-weight:800;color:#201e1d">Try:</strong> tap the unassigned job → assign Garcia's crew · open Shoultes Elementary → Crew tab → resend a push · switch to Crew member → accept the assignment → mark a stage complete → report a late truck.</p>
+      </div>
+      <div style="height:2px;background:rgba(32,30,29,.4);margin:20px 0 14px"></div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#7d7979;margin-bottom:8px">Open for your call</div>
+      <div style="font-size:13px;font-weight:500;line-height:1.55;color:#444141">Maps and plan sheets are placeholders — send me real plans or a site map and I will mount them. Also unbuilt: job creation, time clock, and truck-ticket logging, all of which you left out of scope.</div>
+    </aside>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:1000},&quot;startMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dispatcher&quot;,&quot;crew&quot;],&quot;default&quot;:&quot;dispatcher&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;startLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;es&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
+const T = {
+  en: {
+    t_tomorrow: "Tomorrow · Tue Aug 25", t_today: "Today · Mon Aug 24",
+    t_tabBoard: "Board", t_tabAcks: "Accepted", t_tabRoster: "Crews", t_tabMe: "Me",
+    t_tabToday: "Today", t_tabWeek: "Week", t_tabPhotos: "Photos", t_poolCrew: "New crew from available pool",
+    t_pourShort: "Pour", t_reportShort: "Report", t_unassigned: "Needs a crew",
+    t_assignCrew: "Assign crew", t_selectCrew: "Select a crew", t_cancel: "Cancel",
+    t_overview: "Overview", t_filesShort: "Files", t_crew: "Crew", t_files: "Project files",
+    t_pourTime: "Placement time", t_reportTime: "Report", t_supplier: "Concrete supply",
+    t_supplierName: "Supplier", t_plant: "Plant", t_dispatchPhone: "Dispatch", t_interval: "Truck interval",
+    t_mix: "Mix design", t_order: "Order no.", t_weather: "Weather", t_slump: "Slump", t_notes: "Notes",
+    t_directions: "Directions", t_call: "Call site contact", t_callSupplier: "Call supplier dispatch",
+    t_seeAcks: "See who has accepted", t_pending: "Pending", t_nudge: "Resend",
+    t_swap: "Swap a crew member", t_gated: "Assignment is limited to Owner and Dispatcher roles. Ask the office to change the crew on this job.",
+    t_roster: "Crew roster", t_available: "Available", t_off: "Off",
+    t_role: "Role", t_canDispatch: "Can dispatch", t_canDispatchNote: "Assign crews and edit the board",
+    t_language: "Language", t_langNote: "Saved to this person. Every notification is sent in their language.",
+    t_thisWeek: "This week", t_myWeek: "My week", t_stages: "Job stages", t_done: "Done",
+    t_tasks: "Today's tasks", t_noPour: "no placement",
+    t_newAssignment: "New assignment", t_accept: "Accept assignment",
+    t_reportDelay: "Report a delay", t_addPhoto: "Add photo", t_photos: "Job photos",
+    t_whatHappened: "What is holding you up?", t_howLong: "How long", t_sendToDispatch: "Send to dispatch",
+    t_delayNote: "Dispatch and the supplier are notified at the same time.",
+    t_delaySentTitle: "Dispatch has been notified", t_notified: "Notified", t_notifiedWho: "R. Lehti (foreman) · Office dispatch",
+    t_backToToday: "Back to today", t_siteMap: "Site map", t_placeholder: "placeholder",
+    t_sitePhoto: "Site photo", t_ackHint: "A job with no acceptances by 6:00 PM is flagged red.",
+    t_weekHint: "Assignments are published the evening before.",
+    t_pushSent: "Push notification sent", t_calling: "Calling site contact…", t_opening: "Opening in Maps…",
+    t_callingSupplier: "Calling Cadman dispatch…", t_opened: "Opening file…",
+    roles: ["Owner", "Dispatcher", "Foreman", "Crew"],
+    stages: ["Grade / excavate", "Form", "Pour", "Finish", "Cure", "Strip forms"],
+    reasons: ["Late concrete truck", "Weather", "Site not ready", "Equipment down"],
+    lengths: ["30 min", "1 hr", "2 hr+", "All day"],
+    boardHint: "Tap a job to open it. Assignments push to every crew member at once.",
+    photoSub: "Attached to Shoultes Elementary · visible to dispatch",
+    delaySub: "Shoultes Elementary · placement 7:30 AM",
+    rosterSummary: "50 employees · 3 crews",
+    workLabels: { cg: "Curb & gutter", sw: "Sidewalk" },
+    trades: { foreman: "Foreman", finisher: "Finisher", laborer: "Laborer", operator: "Operator", formsetter: "Form setter" },
+    days: ["Mon 24", "Tue 25", "Wed 26", "Thu 27", "Fri 28"],
+    whats: ["Strip forms", "Placement", "Form", "Placement", "Backfill"]
+  },
+  es: {
+    t_tomorrow: "Mañana · mar 25 ago", t_today: "Hoy · lun 24 ago",
+    t_tabBoard: "Tablero", t_tabAcks: "Aceptado", t_tabRoster: "Personal", t_tabMe: "Yo",
+    t_tabToday: "Hoy", t_tabWeek: "Semana", t_tabPhotos: "Fotos", t_poolCrew: "Cuadrilla nueva del personal disponible",
+    t_pourShort: "Colada", t_reportShort: "Entrada", t_unassigned: "Falta cuadrilla",
+    t_assignCrew: "Asignar cuadrilla", t_selectCrew: "Seleccione una cuadrilla", t_cancel: "Cancelar",
+    t_overview: "Resumen", t_filesShort: "Archivos", t_crew: "Cuadrilla", t_files: "Archivos del proyecto",
+    t_pourTime: "Hora de colocación", t_reportTime: "Entrada", t_supplier: "Suministro de concreto",
+    t_supplierName: "Proveedor", t_plant: "Planta", t_dispatchPhone: "Despacho", t_interval: "Intervalo de camiones",
+    t_mix: "Diseño de mezcla", t_order: "Pedido n.º", t_weather: "Clima", t_slump: "Revenimiento", t_notes: "Notas",
+    t_directions: "Indicaciones", t_call: "Llamar al contacto", t_callSupplier: "Llamar al despacho del proveedor",
+    t_seeAcks: "Ver quién ha aceptado", t_pending: "Pendiente", t_nudge: "Reenviar",
+    t_swap: "Cambiar un integrante", t_gated: "Solo los roles Dueño y Despachador pueden asignar. Pida a la oficina cambiar la cuadrilla.",
+    t_roster: "Personal", t_available: "Disponible", t_off: "Libre",
+    t_role: "Rol", t_canDispatch: "Puede despachar", t_canDispatchNote: "Asignar cuadrillas y editar el tablero",
+    t_language: "Idioma", t_langNote: "Se guarda por persona. Cada aviso se envía en su idioma.",
+    t_thisWeek: "Esta semana", t_myWeek: "Mi semana", t_stages: "Etapas de la obra", t_done: "Listo",
+    t_tasks: "Tareas de hoy", t_noPour: "sin colocación",
+    t_newAssignment: "Nueva asignación", t_accept: "Aceptar asignación",
+    t_reportDelay: "Reportar retraso", t_addPhoto: "Agregar foto", t_photos: "Fotos de la obra",
+    t_whatHappened: "¿Qué los está deteniendo?", t_howLong: "Cuánto tiempo", t_sendToDispatch: "Enviar a despacho",
+    t_delayNote: "Se avisa al despacho y al proveedor al mismo tiempo.",
+    t_delaySentTitle: "Despacho ha sido notificado", t_notified: "Notificados", t_notifiedWho: "R. Lehti (capataz) · Despacho de oficina",
+    t_backToToday: "Volver a hoy", t_siteMap: "Mapa del sitio", t_placeholder: "provisional",
+    t_sitePhoto: "Foto del sitio", t_ackHint: "Una obra sin aceptaciones a las 6:00 PM se marca en rojo.",
+    t_weekHint: "Las asignaciones se publican la tarde anterior.",
+    t_pushSent: "Aviso enviado", t_calling: "Llamando al contacto…", t_opening: "Abriendo en Mapas…",
+    t_callingSupplier: "Llamando al despacho de Cadman…", t_opened: "Abriendo archivo…",
+    roles: ["Dueño", "Despachador", "Capataz", "Cuadrilla"],
+    stages: ["Excavar / nivelar", "Encofrar", "Colocar", "Acabado", "Curado", "Retirar encofrado"],
+    reasons: ["Camión de concreto atrasado", "Clima", "Sitio no listo", "Equipo averiado"],
+    lengths: ["30 min", "1 hr", "2 hr+", "Todo el día"],
+    boardHint: "Toque una obra para abrirla. La asignación se envía a toda la cuadrilla a la vez.",
+    photoSub: "Adjuntas a Shoultes Elementary · visibles para despacho",
+    delaySub: "Shoultes Elementary · colocación 7:30 AM",
+    rosterSummary: "50 empleados · 3 cuadrillas",
+    workLabels: { cg: "Bordillo y cuneta", sw: "Acera" },
+    trades: { foreman: "Capataz", finisher: "Acabador", laborer: "Peón", operator: "Operador", formsetter: "Encofrador" },
+    days: ["lun 24", "mar 25", "mié 26", "jue 27", "vie 28"],
+    whats: ["Retirar encofrado", "Colocación", "Encofrar", "Colocación", "Rellenar"]
+  }
+};
+
+const JOBS = [
+  { id: 1, site: "Shoultes Elementary", addr: "80th St NE & 51st Ave NE, Marysville", work: "cg", day: "pour",
+    pour: "7:30 AM", report: "6:15 AM", qty: "480 LF · 26 CY", crew: "Lehti", size: 9, acks: 7,
+    supplier: "Cadman", plant: "Marysville 12", phone: "(360) 659-4141", intervalMin: 20,
+    mix: "4000-A", order: "C-88412", slump: "4 in", weatherEn: "64° · Clear", weatherEs: "18° · Despejado",
+    notesEn: "Traffic control set at 6:00. Inspector on site at 7:00. Two finishers from Melvin's crew ride along.",
+    notesEs: "Control de tráfico a las 6:00. Inspector en obra a las 7:00. Dos acabadores de la cuadrilla de Melvin acompañan." },
+  { id: 2, site: "North Bend Way", addr: "North Bend Way & Ballarat Ave", work: "sw", day: "form",
+    report: "6:30 AM", qty: "320 LF", crew: "Melvin", size: 6, acks: 6,
+    slump: "—", weatherEn: "61° · Overcast", weatherEs: "16° · Nublado",
+    notesEn: "Grade check before forms go in. Rebar staged for Wednesday's placement.",
+    notesEs: "Verificar nivel antes de encofrar. Varilla preparada para la colocación del miércoles.",
+    tasksEn: ["Set forms — Sta 4+00 to 7+20", "Grade check with laser", "Stage rebar for Wednesday"],
+    tasksEs: ["Colocar encofrado — Est 4+00 a 7+20", "Verificar nivel con láser", "Preparar varilla para el miércoles"] },
+  { id: 3, site: "124th Ave SE Transit", addr: "124th Ave SE & SE 176th St, Renton", work: "cg", day: "strip",
+    report: "6:30 AM", qty: "610 LF", crew: "Garcia", size: 7, acks: 0,
+    slump: "—", weatherEn: "66° · Clear", weatherEs: "19° · Despejado",
+    notesEn: "Forms go back to the yard the same day. Flaggers released at noon.",
+    notesEs: "El encofrado regresa al taller el mismo día. Banderilleros liberados al mediodía.",
+    tasksEn: ["Strip forms — north run", "Backfill and compact", "Haul forms to the yard"],
+    tasksEs: ["Retirar encofrado — tramo norte", "Rellenar y compactar", "Llevar encofrado al taller"] },
+  { id: 4, site: "Shoultes Elementary — Phase 2", addr: "80th St NE, Marysville", work: "sw", day: "form",
+    report: "6:30 AM", qty: "240 LF", crew: null, size: 0, acks: 0,
+    slump: "—", weatherEn: "64° · Clear", weatherEs: "18° · Despejado",
+    notesEn: "Walk added by change order. Needs a crew of five.",
+    notesEs: "Acera añadida por orden de cambio. Requiere cuadrilla de cinco.",
+    tasksEn: ["Layout from station 0+00", "Set forms for 240 LF walk"],
+    tasksEs: ["Trazado desde la estación 0+00", "Encofrar 240 pies de acera"] }
+];
+
+const MEMBERS = [
+  { n: "R. Lehti", tr: "foreman", at: "5:12 PM" },
+  { n: "M. Alvarez", tr: "finisher", at: "5:14 PM" },
+  { n: "T. Okafor", tr: "laborer", at: "5:19 PM" },
+  { n: "D. Whitcomb", tr: "operator", at: "5:31 PM" },
+  { n: "J. Salazar", tr: "formsetter", at: "6:02 PM" },
+  { n: "K. Boyd", tr: "laborer", at: "6:20 PM" },
+  { n: "E. Cruz", tr: "finisher", at: "7:44 PM" },
+  { n: "P. Nakamura", tr: "laborer", at: null },
+  { n: "L. Vance", tr: "laborer", at: null }
+];
+
+const ROSTER = [
+  { n: "R. Lehti", tr: "foreman", role: 2, st: "job", job: "Shoultes" },
+  { n: "S. Melvin", tr: "foreman", role: 2, st: "job", job: "North Bend" },
+  { n: "A. Garcia", tr: "foreman", role: 2, st: "job", job: "124th Ave" },
+  { n: "M. Alvarez", tr: "finisher", role: 3, st: "job", job: "Shoultes" },
+  { n: "P. Nakamura", tr: "laborer", role: 3, st: "avail" },
+  { n: "L. Vance", tr: "laborer", role: 3, st: "avail" },
+  { n: "D. Whitcomb", tr: "operator", role: 3, st: "job", job: "Shoultes" },
+  { n: "E. Cruz", tr: "finisher", role: 3, st: "off" },
+  { n: "J. Salazar", tr: "formsetter", role: 3, st: "avail" }
+];
+
+const TAB_ICONS = {
+  board: "M3 4h18M3 10h18M3 16h18M3 22h18",
+  acks: "M20 6L9 17l-5-5",
+  roster: "M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M9 11a3 3 0 100-6 3 3 0 000 6M21 20c0-2.5-1.5-4.6-3.6-5.5M17 5a3 3 0 010 6",
+  me: "M12 12a4 4 0 100-8 4 4 0 000 8M4 21c0-4 3.6-7 8-7s8 3 8 7",
+  today: "M3 3h18v18H3zM3 9h18M8 3v4",
+  sched: "M3 4h18v17H3zM3 10h18M8 2v4M16 2v4",
+  photos: "M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"
+};
+
+const ini = (n) => n.replace(/[^A-Za-z. ]/g, "").split(" ").map(s => s[0]).join("").toUpperCase().slice(0, 2);
+
+class Component extends DCLogic {
+  state = {
+    lang: this.props.startLang || "en",
+    role: this.props.startMode || "dispatcher",
+    screen: (this.props.startMode || "dispatcher") === "crew" ? "crewToday" : "board",
+    jobId: 1, sub: "overview",
+    sheet: false, sheetJob: null, toast: "", assigned: {}, acks: {},
+    accepted: false, stage: 1, delayStep: 0, reason: null, length: null,
+    photos: 2, person: 0, personRole: 2, canDispatchFlag: true
+  };
+
+  L() { return T[this.state.lang]; }
+  flash(msg) {
+    clearTimeout(this._tt);
+    this.setState({ toast: msg });
+    this._tt = setTimeout(() => this.setState({ toast: "" }), 1900);
+  }
+  job(id) { return JOBS.find(j => j.id === id) || JOBS[0]; }
+  crewOf(j) { return this.state.assigned[j.id] || j.crew; }
+  ackOf(j) { const a = this.state.acks[j.id]; return a === undefined ? j.acks : a; }
+  sizeOf(j) { const c = this.crewOf(j); if (!c) return 0; if (c === j.crew) return j.size; return { Lehti: 9, Melvin: 6, Garcia: 7 }[c] || 5; }
+  crewLabel(name) { if (!name) return ""; if (name === "Pool") return this.L().t_poolCrew; return this.state.lang === "en" ? name + "'s crew" : "cuadrilla de " + name; }
+
+  go(screen, extra) { this.setState(Object.assign({ screen: screen }, extra || {})); }
+
+  renderVals() {
+    const L = this.L(), st = this.state, isDisp = st.role === "dispatcher";
+    const on = "#201e1d", off = "none", onFg = "#f3f2f2", offFg = "#201e1d";
+    const j = this.job(st.jobId);
+    const myJob = this.job(1);
+    const canDispatch = isDisp && st.canDispatchFlag;
+
+    const jobRow = (job) => {
+      const crew = this.crewOf(job), ack = this.ackOf(job), size = this.sizeOf(job);
+      return {
+        id: job.id, site: job.site, qty: job.qty, pour: job.pour, report: job.report,
+        workLabel: L.workLabels[job.work],
+        isPour: job.day === "pour", notPour: job.day !== "pour",
+        assigned: !!crew, unassigned: !crew,
+        crewLabelFull: this.crewLabel(crew),
+        ackText: ack + "/" + size,
+        ackFull: !!crew && ack === size, ackPartial: !!crew && ack > 0 && ack < size, ackNone: !!crew && ack === 0,
+        pct: size ? Math.round((ack / size) * 100) + "%" : "0%",
+        open: () => this.go("job", { jobId: job.id, sub: "overview" }),
+        assign: (e) => { if (e) e.stopPropagation(); this.setState({ sheet: true, sheetJob: job.id }); }
+      };
+    };
+
+    const tabDefs = isDisp
+      ? [["board", L.t_tabBoard, "board"], ["acks", L.t_tabAcks, "acks"], ["roster", L.t_tabRoster, "roster"], ["profile", L.t_tabMe, "me"]]
+      : [["crewToday", L.t_tabToday, "today"], ["sched", L.t_tabWeek, "sched"], ["photos", L.t_tabPhotos, "photos"], ["profile", L.t_tabMe, "me"]];
+    const activeTab = st.screen === "job" ? (isDisp ? "board" : "crewToday") : (st.screen === "delay" ? "crewToday" : st.screen);
+    const tabs = tabDefs.map(([key, label, icon]) => ({
+      key, label, icon: TAB_ICONS[icon],
+      bg: activeTab === key ? on : "none", fg: activeTab === key ? onFg : "#7d7979",
+      go: () => this.go(key === "profile" ? "profile" : key, key === "profile" ? { person: isDisp ? 0 : 4 } : {})
+    }));
+
+    const headers = {
+      board: [isDisp ? "P&A Civil" : "", L.t_roster ? "Dispatch" : ""],
+      job: [L.workLabels[j.work], j.site]
+    };
+
+    const stageList = L.stages.map((name, i) => ({
+      name, done: i < st.stage, current: i === st.stage, todo: i > st.stage,
+      at: i < st.stage ? (i === 0 ? "Aug 21" : "Aug 22") : "",
+      complete: () => { this.setState({ stage: Math.min(st.stage + 1, L.stages.length) }); this.flash(name + " · " + L.t_done); }
+    }));
+
+    const person = ROSTER[st.person] || ROSTER[0];
+    const roleOptions = L.roles.map((label, i) => ({
+      label, bg: st.personRole === i ? on : "none", fg: st.personRole === i ? onFg : offFg,
+      pick: () => this.setState({ personRole: i, canDispatchFlag: i <= 1 })
+    }));
+
+    const crewOptions = [
+      { name: this.crewLabel("Garcia"), initials: "AG", meta: L.trades.foreman + " A. Garcia · 7", free: false, busy: true, busyLabel: "124th Ave", pick: () => this.pickCrew("Garcia") },
+      { name: this.crewLabel("Melvin"), initials: "SM", meta: L.trades.foreman + " S. Melvin · 6", free: false, busy: true, busyLabel: "North Bend", pick: () => this.pickCrew("Melvin") },
+      { name: this.state.lang === "en" ? "Available pool · 5" : "Personal disponible · 5", initials: "AP", meta: "Nakamura, Vance, Salazar +2", free: true, busy: false, pick: () => this.pickCrew("Pool") }
+    ];
+
+    const photoList = Array.from({ length: st.photos }, (_, i) => ({
+      caption: (this.state.lang === "en" ? "Subgrade " : "Subrasante ") + (i + 1),
+      at: "Aug 24 · 7:0" + (i + 1) + " AM"
+    }));
+
+    const week = L.days.map((day, i) => ({
+      day, job: [JOBS[2].site, JOBS[0].site, JOBS[1].site, JOBS[0].site, JOBS[2].site][i],
+      what: L.whats[i], time: ["6:30 AM", "7:30 AM", "6:30 AM", "8:00 AM", "6:30 AM"][i],
+      isPour: i === 1 || i === 3, notPour: !(i === 1 || i === 3)
+    }));
+
+    const v = Object.assign({}, L, {
+      screenKey: st.screen + st.sub + st.lang + st.role,
+      showNotes: this.props.showNotes !== false,
+      isBoard: st.screen === "board", isJob: st.screen === "job", isAcks: st.screen === "acks",
+      isRoster: st.screen === "roster", isProfile: st.screen === "profile",
+      isCrewToday: st.screen === "crewToday", isDelay: st.screen === "delay",
+      isPhotos: st.screen === "photos", isSched: st.screen === "sched",
+      canBack: st.screen === "job" || st.screen === "delay",
+      back: () => this.go(st.screen === "delay" ? "crewToday" : (this.state.role === "dispatcher" ? "board" : "crewToday"), { delayStep: 0 }),
+
+      headerKicker: st.screen === "job" ? L.workLabels[j.work] : (isDisp ? "P&A Civil · Dispatch" : "P&A Civil · " + this.crewLabel("Lehti")),
+      headerTitle: st.screen === "job" ? j.site : (isDisp ? { board: L.t_tomorrow, acks: L.t_seeAcks, roster: L.t_roster, profile: person.n }[st.screen] || "" : { crewToday: L.t_today, sched: L.t_myWeek, photos: L.t_photos, delay: L.t_reportDelay, profile: "M. Alvarez" }[st.screen] || ""),
+
+      setEn: () => this.setState({ lang: "en" }), setEs: () => this.setState({ lang: "es" }),
+      enBg: st.lang === "en" ? on : "none", enFg: st.lang === "en" ? onFg : offFg,
+      esBg: st.lang === "es" ? on : "none", esFg: st.lang === "es" ? onFg : offFg,
+
+      setDispatcher: () => this.setState({ role: "dispatcher", screen: "board", canDispatchFlag: true }),
+      setCrew: () => this.setState({ role: "crew", screen: "crewToday" }),
+      dispBg: isDisp ? on : "none", dispFg: isDisp ? onFg : offFg,
+      crewBg: !isDisp ? on : "none", crewFg: !isDisp ? onFg : offFg,
+      modeNote: isDisp
+        ? "Dispatcher · S. Reyes, office. Sees every job, assigns crews, tracks acceptances."
+        : "Crew · M. Alvarez, finisher on Lehti's crew. Sees only today, tomorrow and their own week.",
+
+      jobs: JOBS.map(jobRow),
+      ackJobs: JOBS.filter(x => this.crewOf(x)).map(jobRow),
+      boardSummary: (this.state.lang === "en"
+        ? JOBS.filter(x => this.crewOf(x)).length + " crews out · 1 placement · "
+        : JOBS.filter(x => this.crewOf(x)).length + " cuadrillas · 1 colocación · ") +
+        (JOBS.filter(x => !this.crewOf(x)).length ? L.t_unassigned.toLowerCase() : (this.state.lang === "en" ? "all assigned" : "todo asignado")),
+      ackHeadline: this.state.lang === "en" ? "Who has accepted" : "Quién ha aceptado",
+
+      job_site: j.site, job_addr: j.addr, job_qty: j.qty, job_pour: j.pour, job_report: j.report,
+      job_workLabel: L.workLabels[j.work], job_isPour: j.day === "pour", job_notPour: j.day !== "pour",
+      job_supplier: j.supplier || "—", job_plant: j.plant || "—", job_phone: j.phone || "—",
+      job_interval: j.intervalMin ? (this.state.lang === "en" ? "every " + j.intervalMin + " min" : "cada " + j.intervalMin + " min") : "—",
+      job_mix: j.mix || "—", job_order: j.order || "—", job_slump: j.slump,
+      job_weather: this.state.lang === "en" ? j.weatherEn : j.weatherEs,
+      job_notes: this.state.lang === "en" ? j.notesEn : j.notesEs,
+      job_crewLabelFull: this.crewLabel(this.crewOf(j)),
+      job_ackText: this.ackOf(j) + "/" + this.sizeOf(j),
+
+      subIsOverview: st.sub === "overview", subIsFiles: st.sub === "files", subIsCrew: st.sub === "crew",
+      subOverview: () => this.setState({ sub: "overview" }), subFiles: () => this.setState({ sub: "files" }), subCrew: () => this.setState({ sub: "crew" }),
+      tabOvBg: st.sub === "overview" ? on : "none", tabOvFg: st.sub === "overview" ? onFg : offFg,
+      tabFiBg: st.sub === "files" ? on : "none", tabFiFg: st.sub === "files" ? onFg : offFg,
+      tabCrBg: st.sub === "crew" ? on : "none", tabCrFg: st.sub === "crew" ? onFg : offFg,
+
+      fileList: (this.state.lang === "en"
+        ? [["Plan sheets — C4 through C9", "PDF · 12 pages · rev 3"], ["Traffic control plan", "PDF · 2 pages"], ["Mix design 4000-A", "Submittal · approved"], ["Site map", "Image · placeholder"]]
+        : [["Planos — C4 a C9", "PDF · 12 páginas · rev 3"], ["Plan de control de tráfico", "PDF · 2 páginas"], ["Diseño de mezcla 4000-A", "Presentación · aprobada"], ["Mapa del sitio", "Imagen · provisional"]]
+      ).map(([name, meta]) => ({ name, meta, open: () => this.flash(L.t_opened) })),
+
+      crewMembers: MEMBERS.slice(0, this.sizeOf(j) || 9).map((m, i) => {
+        const acked = i < this.ackOf(j) || !!this.state.acks["p" + i];
+        return {
+          name: m.n, trade: L.trades[m.tr], ok: acked, pending: !acked,
+          at: m.at || "8:02 PM",
+          nudge: () => this.flash(m.n + " · " + L.t_pushSent)
+        };
+      }),
+      canDispatch, cannotDispatch: !canDispatch,
+      goAcks: () => this.go("acks"),
+      openSheet: () => this.setState({ sheet: true, sheetJob: j.id }),
+
+      roster: ROSTER.map((p, i) => ({
+        name: p.n, initials: ini(p.n), trade: L.trades[p.tr], roleLabel: L.roles[p.role],
+        isAvailable: p.st === "avail", isOnJob: p.st === "job", isOff: p.st === "off",
+        jobShort: p.job || "", open: () => this.go("profile", { person: i, personRole: p.role, canDispatchFlag: p.role <= 1 })
+      })),
+
+      person_name: isDisp ? person.n : "M. Alvarez",
+      person_initials: ini(isDisp ? person.n : "M. Alvarez"),
+      person_trade: L.trades[isDisp ? person.tr : "finisher"],
+      person_phone: "(425) 555-0" + (140 + st.person),
+      roleOptions,
+      roleNote: st.personRole <= 1
+        ? (this.state.lang === "en" ? "Can create jobs, assign crews and edit the board." : "Puede crear obras, asignar cuadrillas y editar el tablero.")
+        : (this.state.lang === "en" ? "Sees only their own assignments. Foremen can request a swap." : "Solo ve sus asignaciones. Los capataces pueden pedir un cambio."),
+      toggleDispatch: () => this.setState({ canDispatchFlag: !st.canDispatchFlag }),
+      dispatchToggleBg: st.canDispatchFlag ? "#ec3013" : "none",
+      dispatchToggleJustify: st.canDispatchFlag ? "flex-end" : "flex-start",
+      dispatchKnobBg: st.canDispatchFlag ? "#fff" : "#201e1d",
+      personWeek: week.map(w => ({ day: w.day, job: w.job, time: w.time })),
+      myWeek: week,
+
+      needsAccept: !st.accepted, hasAccepted: st.accepted,
+      acceptPrompt: this.state.lang === "en"
+        ? "Shoultes Elementary — placement 7:30 AM tomorrow. Report to the site at 6:15 AM."
+        : "Shoultes Elementary — colocación mañana 7:30 AM. Presentarse en obra a las 6:15 AM.",
+      accept: () => { this.setState({ accepted: true }); this.flash(this.state.lang === "en" ? "Assignment accepted · dispatch notified" : "Asignación aceptada · despacho notificado"); },
+      acceptedAt: this.state.lang === "en" ? "Accepted yesterday, 5:14 PM" : "Aceptada ayer, 5:14 PM",
+
+      myCrewLabel: this.crewLabel("Lehti"), myJobSite: myJob.site, myJobAddr: myJob.addr,
+      myIsPour: myJob.day === "pour", myNotPour: myJob.day !== "pour",
+      myPour: myJob.pour, myReport: myJob.report, myQty: myJob.qty,
+      mySupplier: myJob.supplier, myPlant: myJob.plant, myMix: myJob.mix,
+      myInterval: this.state.lang === "en" ? "every 20 min" : "cada 20 min",
+      myTasks: (this.state.lang === "en" ? myJob.tasksEn : myJob.tasksEs || []) ? ((this.state.lang === "en" ? myJob.tasksEn : myJob.tasksEs) || []).map(text => ({ text })) : [],
+      stageList,
+
+      goPhotos: () => this.go("photos"), goDelay: () => this.go("delay", { delayStep: 0 }),
+      goToday: () => this.go("crewToday", { delayStep: 0, reason: null, length: null }),
+      goJobFromCrew: () => this.go("job", { jobId: 1, sub: "files" }),
+
+      delayPicking: st.delayStep === 0, delaySent: st.delayStep === 1,
+      delayReasons: L.reasons.map((label, i) => ({
+        label, bg: st.reason === i ? "#ffe0d9" : "none", dot: st.reason === i ? "#ec3013" : "none",
+        pick: () => this.setState({ reason: i })
+      })),
+      delayLengths: L.lengths.map((label, i) => ({
+        label, bg: st.length === i ? on : "none", fg: st.length === i ? onFg : offFg,
+        pick: () => this.setState({ length: i })
+      })),
+      delaySendBg: st.reason === null ? "#d7d3d3" : "#ec3013",
+      delaySendFg: st.reason === null ? "#7d7979" : "#fff",
+      submitDelay: () => {
+        if (st.reason === null) { this.flash(this.state.lang === "en" ? "Pick a reason first" : "Seleccione un motivo"); return; }
+        this.setState({ delayStep: 1 });
+      },
+      delaySentBody: st.reason === null ? "" : (this.state.lang === "en"
+        ? L.reasons[st.reason] + " · " + (st.length === null ? "unknown length" : L.lengths[st.length]) + ". Cadman dispatch was asked to hold the trucks."
+        : L.reasons[st.reason] + " · " + (st.length === null ? "duración desconocida" : L.lengths[st.length]) + ". Se pidió a Cadman detener los camiones."),
+
+      photos: st.photos, photoList,
+      addPhoto: () => { this.setState({ photos: Math.min(st.photos + 1, 8) }); this.flash(this.state.lang === "en" ? "Photo attached to the job" : "Foto adjuntada a la obra"); },
+
+      tabs,
+      sheetOpen: st.sheet, sheetKicker: st.sheetJob ? this.job(st.sheetJob).site : "",
+      crewOptions,
+      closeSheet: () => this.setState({ sheet: false }),
+      stop: (e) => { if (e) e.stopPropagation(); },
+
+      toast: st.toast,
+      toastCall: () => this.flash(L.t_calling),
+      toastDirections: () => this.flash(L.t_opening),
+      toastSupplier: () => this.flash(L.t_callingSupplier),
+      rosterSummary: L.rosterSummary, boardHint: L.boardHint, photoSub: L.photoSub, delaySub: L.delaySub
+    });
+    return v;
+  }
+
+  pickCrew(name) {
+    const id = this.state.sheetJob;
+    const assigned = Object.assign({}, this.state.assigned); assigned[id] = name;
+    const acks = Object.assign({}, this.state.acks); acks[id] = 0;
+    this.setState({ assigned, acks, sheet: false });
+    this.flash(this.state.lang === "en" ? this.crewLabel(name) + " assigned · push sent" : this.crewLabel(name) + " asignada · aviso enviado");
+  }
+}
+
+</script>
+</body>
+</html>
