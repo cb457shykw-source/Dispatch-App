@@ -10,6 +10,10 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/android": "7.6.8",
+    "@capacitor/cli": "7.6.8",
+    "@capacitor/core": "7.6.8",
+    "@capacitor/ios": "7.6.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

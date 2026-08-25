@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Crew Dispatch</string>
+    <string name="title_activity_main">Crew Dispatch</string>
+    <string name="package_name">com.paconc.crewdispatch</string>
+    <string name="custom_url_scheme">com.paconc.crewdispatch</string>
+</resources>
